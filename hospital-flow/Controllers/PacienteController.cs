@@ -14,7 +14,7 @@ public class PacienteController : ControllerBase
     }
 
     [HttpPost("adicionar-paciente")]
-    public IActionResult CriarOuAtualizarPaciente([FromBody] Paciente paciente)
+    public IActionResult PostPaciente([FromBody] Paciente paciente)
     {
         if (paciente == null)
         {
