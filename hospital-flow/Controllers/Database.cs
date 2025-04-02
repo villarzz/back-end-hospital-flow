@@ -1,27 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using hospital_flow.Services;
+using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("api/database")]
-public class DatabaseController : ControllerBase
+namespace hospital_flow.Controllers
 {
-    private readonly DatabaseService _databaseService;
-
-    public DatabaseController(DatabaseService databaseService)
+    [ApiController]
+    [Route("api/database")]
+    public class DatabaseController : ControllerBase
     {
-        _databaseService = databaseService;
-    }
+        private readonly DatabaseService _databaseService;
 
-    [HttpGet("testar")]
-    public IActionResult TestarConexao()
-    {
-        try
+        public DatabaseController(DatabaseService databaseService)
         {
-            _databaseService.TestarConexao();
-            return Ok("Conexão com SQLite bem-sucedida!");
+            _databaseService = databaseService;
         }
-        catch (Exception ex)
+
+        [HttpGet("testar")]
+        public IActionResult TestarConexao()
         {
-            return StatusCode(500, $"Erro ao conectar: {ex.Message}");
+            try
+            {
+                _databaseService.TestarConexao();
+                return Ok("Conexão com SQLite bem-sucedida!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao conectar: {ex.Message}");
+            }
         }
     }
 }

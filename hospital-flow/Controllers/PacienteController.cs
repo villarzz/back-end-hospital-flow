@@ -1,48 +1,51 @@
 ﻿using hospital_flow.Models;
+using hospital_flow.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
-[ApiController]
-[Route("api/[controller]")]
-public class PacienteController : ControllerBase
+namespace hospital_flow.Controllers
 {
-    private readonly PacienteService _pacienteService;
-
-    public PacienteController(PacienteService pacienteService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PacienteController : ControllerBase
     {
-        _pacienteService = pacienteService;
-    }
+        private readonly PacienteService _pacienteService;
 
-    [HttpPost("adicionar-paciente")]
-    public IActionResult PostPaciente([FromBody] Paciente paciente)
-    {
-        if (paciente == null)
+        public PacienteController(PacienteService pacienteService)
         {
-            return BadRequest("Dados inválidos.");
+            _pacienteService = pacienteService;
         }
 
-        _pacienteService.PostPaciente(paciente);
-        return Ok("Paciente criado ou atualizado com sucesso.");
-    }
-
-
-    [HttpGet("obter-pacientes")]
-    public ActionResult<List<Paciente>> GetPacientes()
-    {
-        try
+        [HttpPost("adicionar-paciente")]
+        public IActionResult PostPaciente([FromBody] Paciente paciente)
         {
-            var pacientes = _pacienteService.GetPacientes();
-
-            if (pacientes == null || pacientes.Count == 0)
+            if (paciente == null)
             {
-                return StatusCode(201,  "Nenhum paciente encontrado.");
+                return BadRequest("Dados inválidos.");
             }
 
-            return Ok(pacientes);
+            _pacienteService.PostPaciente(paciente);
+            return Ok("Paciente criado ou atualizado com sucesso.");
         }
-        catch (Exception ex)
+
+
+        [HttpGet("obter-pacientes")]
+        public ActionResult<List<Paciente>> GetPacientes()
         {
-            return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
+            try
+            {
+                var pacientes = _pacienteService.GetPacientes();
+
+                if (pacientes == null || pacientes.Count == 0)
+                {
+                    return StatusCode(201, "Nenhum paciente encontrado.");
+                }
+
+                return Ok(pacientes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
+            }
         }
     }
 }

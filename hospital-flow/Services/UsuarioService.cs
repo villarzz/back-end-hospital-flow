@@ -7,9 +7,9 @@ namespace hospital_flow.Services
     {
         private readonly string _connectionString;
 
-        public UsuarioService(string connectionString)
+        public UsuarioService(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         public void CriarOuAtualizarUsuario(Usuario usuario)
@@ -114,5 +114,4 @@ namespace hospital_flow.Services
             }
         }
     }
-
 }

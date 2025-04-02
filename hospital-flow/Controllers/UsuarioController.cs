@@ -2,7 +2,7 @@
 using hospital_flow.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace hospital_flow.Controllers
+namespace hospital_flow.Controllers 
 {
     [ApiController]
     [Route("api/usuarios")]

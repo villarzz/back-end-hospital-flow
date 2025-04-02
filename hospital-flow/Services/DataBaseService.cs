@@ -1,15 +1,23 @@
 ﻿using Microsoft.Data.Sqlite;
 
-public class DatabaseService
+namespace hospital_flow.Services
 {
-    private readonly string _connectionString = "Data Source=./hospital-flow-DB.db;";
-
-    public void TestarConexao()
+    public class DatabaseService
     {
-        using (var connection = new SqliteConnection(_connectionString))
+        private readonly string _connectionString;
+
+        public DatabaseService(IConfiguration configuration)
         {
-            connection.Open();
-            Console.WriteLine("Conexão com SQLite bem-sucedida!");
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
+
+        public void TestarConexao()
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+                Console.WriteLine("Conexão com SQLite bem-sucedida!");
+            }
         }
     }
 }
