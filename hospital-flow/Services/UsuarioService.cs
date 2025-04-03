@@ -19,7 +19,7 @@ namespace hospital_flow.Services
                 connection.Open();
 
                 // Verifica se o usuário já existe pelo nome de usuário
-                string queryVerifica = "SELECT Id FROM Usuario WHERE NomeUsuario = @NomeUsuario";
+                string queryVerifica = "SELECT Id FROM Usuario WHERE USUARIO = @NomeUsuario";
 
                 int? usuarioId = null;
 
@@ -51,7 +51,7 @@ namespace hospital_flow.Services
                 else
                 {
                     // Insere um novo usuário
-                    string queryInserir = "INSERT INTO Usuario (NomeUsuario, Senha) VALUES (@NomeUsuario, @Senha)";
+                    string queryInserir = "INSERT INTO Usuario (Usuario, Senha) VALUES (@NomeUsuario, @Senha)";
 
                     using (var commandInserir = new SqliteCommand(queryInserir, connection))
                     {
