@@ -11,7 +11,7 @@ namespace hospital_flow.Services
     public class AuthService
     {
         private readonly string _connectionString;
-        private readonly string _jwtSecret = "sua-chave-secreta-super-segura"; // Substituir por algo seguro
+        private readonly string _jwtSecret = "zQ9sk+3xyvKZsY+U8ZVgA5NlW7Zx9XkrsT9z0yhcBkQ=";
 
         public AuthService(IConfiguration configuration)
         {
@@ -24,7 +24,7 @@ namespace hospital_flow.Services
             {
                 connection.Open();
 
-                string query = "SELECT Id FROM Usuario WHERE NomeUsuario = @NomeUsuario AND Senha = @Senha";
+                string query = "SELECT Id FROM Usuario WHERE usuario = @NomeUsuario AND Senha = @Senha";
 
                 using (var command = new SqliteCommand(query, connection))
                 {
