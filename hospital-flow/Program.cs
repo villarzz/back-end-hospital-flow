@@ -1,26 +1,36 @@
-using Microsoft.IdentityModel.Tokens;
+ï»¿using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using hospital_flow.Services;
 
 namespace hospital_flow
 {
-
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Chave secreta para JWT (use uma chave mais segura em produção)
+            // Chave secreta para JWT (use uma chave mais segura em produÃ§Ã£o)
             var key = Encoding.ASCII.GetBytes("sua-chave-secreta-super-segura");
 
-            // Adicionando serviços ao contêiner
+            // Adicionando serviÃ§os ao contÃªiner
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Configuração da autenticação JWT
+            // ðŸŸ¡ ConfiguraÃ§Ã£o do CORS para produÃ§Ã£o (permitir apenas uma origem especÃ­fica)
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", policy =>
+                {
+                    policy.WithOrigins("https://seu-dominio.com") // Substitua pelo domÃ­nio do seu front-end
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
+
+            // ConfiguraÃ§Ã£o da autenticaÃ§Ã£o JWT
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -28,7 +38,7 @@ namespace hospital_flow
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = false;
+                options.RequireHttpsMetadata = true;  // Impede uso de HTTP (sÃ³ HTTPS)
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -39,10 +49,10 @@ namespace hospital_flow
                 };
             });
 
-            // Adicionando autorização
+            // Adicionando autorizaÃ§Ã£o
             builder.Services.AddAuthorization();
 
-            // Serviços do banco de dados e lógica da aplicação
+            // ServiÃ§os do banco de dados e lÃ³gica da aplicaÃ§Ã£o
             builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<PacienteService>();
             builder.Services.AddSingleton<UsuarioService>();
@@ -50,7 +60,7 @@ namespace hospital_flow
 
             var app = builder.Build();
 
-            // Configuração do pipeline HTTP
+            // ConfiguraÃ§Ã£o do pipeline HTTP
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -59,7 +69,9 @@ namespace hospital_flow
 
             app.UseHttpsRedirection();
 
-            // Adiciona autenticação e autorização ao pipeline
+            // ðŸŸ¡ Ativando o CORS restrito no pipeline para produÃ§Ã£o
+            app.UseCors("AllowSpecificOrigin");
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -68,5 +80,4 @@ namespace hospital_flow
             app.Run();
         }
     }
-
 }
