@@ -44,6 +44,18 @@ namespace hospital_flow.Controllers
             return Ok("Internação criada com sucesso.");
         }
 
+        [HttpPut("atualizar-internacao")]
+        public IActionResult PutInternacao([FromBody] Internacao internacao)
+        {
+            if (internacao == null || internacao.Id == 0)
+            {
+                return BadRequest("Dados inválidos.");
+            }
+
+            _internacaoService.PutInternacao(internacao);
+            return Ok("Internação atualizada com sucesso.");
+        }
+
         [HttpGet("obter-internacoes")]
         public IActionResult ObterInternacoes(
             [FromQuery] string? atendimento,

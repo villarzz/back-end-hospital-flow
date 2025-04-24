@@ -51,6 +51,35 @@ public class InternacaoService
         }
     }
 
+    public void PutInternacao(Internacao internacao)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+
+            string query = @"
+                UPDATE Internacao 
+                SET DataInicio = @DataInicio,
+                    DataFim = @DataFim,
+                    PacienteId = @PacienteId,
+                    AcomodacaoId = @AcomodacaoId,
+                    StatusInternacaoId = @StatusInternacaoId
+                WHERE Id = @Id";
+
+            using (var command = new SqliteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@DataInicio", internacao.DataInicio);
+                command.Parameters.AddWithValue("@DataFim", (object?)internacao.DataFim ?? DBNull.Value);
+                command.Parameters.AddWithValue("@PacienteId", internacao.PacienteId);
+                command.Parameters.AddWithValue("@AcomodacaoId", internacao.AcomodacaoId);
+                command.Parameters.AddWithValue("@StatusInternacaoId", internacao.StatusInternacaoId);
+                command.Parameters.AddWithValue("@Id", internacao.Id);
+
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+
     public List<InternacaoFiltro> ObterInternacoes(string? atendimento, string? nomePaciente, string? convenio, string? statusInternacao)
     {
         var internacoes = new List<InternacaoFiltro>();
@@ -60,10 +89,17 @@ public class InternacaoService
             connection.Open();
 
             var sql = @"
-            SELECT i.*, p.NOME AS NomePaciente, p.Convenio
-            FROM INTERNACAO i
-            LEFT JOIN Paciente p ON i.PACIENTEID = p.id
-            WHERE 1 = 1";
+        SELECT 
+            i.*, 
+            p.Nome AS NomePaciente, 
+            p.Convenio, 
+            a.DESCRICAO as DescricaoAcomodacao, 
+            s.DESCRICAO as StatusInternacaoDescricao
+        FROM INTERNACAO i
+        LEFT JOIN ACOMODACAO a ON i.ACOMODACAOID = a.id
+        LEFT JOIN STATUSINTERNACAO s ON i.STATUSINTERNACAOID = s.id
+        LEFT JOIN Paciente p ON i.PACIENTEID = p.id
+        WHERE 1 = 1";
 
             var parameters = new List<SqliteParameter>();
 
@@ -103,20 +139,20 @@ public class InternacaoService
                         {
                             Id = Convert.ToInt32(reader["Id"]),
                             Atendimento = Convert.ToInt32(reader["Atendimento"]),
-                            DataInicio = reader["DataInicio"].ToString(),
-                            DataFim = reader["DataFim"].ToString(),
+                            DataInicio = reader["DataInicio"]?.ToString(),
+                            DataFim = reader["DataFim"]?.ToString(),
                             StatusInternacaoId = Convert.ToInt32(reader["STATUSINTERNACAOID"]),
                             PacienteId = Convert.ToInt32(reader["PACIENTEID"]),
-                            NomePaciente = reader["NomePaciente"].ToString(),
-                            Convenio = reader["Convenio"].ToString(),
+                            NomePaciente = reader["NomePaciente"]?.ToString(),
+                            Convenio = reader["Convenio"]?.ToString(),
                             AcomodacaoId = Convert.ToInt32(reader["ACOMODACAOID"]),
+                            AcomodacaoDescricao = reader["DescricaoAcomodacao"]?.ToString(),
+                            StatusInternacaoDescricao = reader["StatusInternacaoDescricao"]?.ToString()
                         });
                     }
                 }
             }
         }
-
         return internacoes;
     }
-
 }
