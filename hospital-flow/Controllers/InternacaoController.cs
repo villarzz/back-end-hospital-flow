@@ -23,10 +23,26 @@ namespace hospital_flow.Controllers
                 return BadRequest("Dados inválidos.");
             }
 
+            if (!DateTime.TryParseExact(internacao.DataInicio, "dd/MM/yyyy",
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out _))
+            {
+                return BadRequest("Data de início deve estar no formato dd/MM/yyyy.");
+            }
+
+            if (!string.IsNullOrEmpty(internacao.DataFim))
+            {
+                if (!DateTime.TryParseExact(internacao.DataFim, "dd/MM/yyyy",
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None, out _))
+                {
+                    return BadRequest("Data de fim deve estar no formato dd/MM/yyyy.");
+                }
+            }
+
             _internacaoService.PostInternacao(internacao);
             return Ok("Internação criada com sucesso.");
         }
+
     }
-
-
 }

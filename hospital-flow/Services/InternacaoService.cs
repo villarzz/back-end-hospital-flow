@@ -16,23 +16,39 @@ public class InternacaoService
         {
             connection.Open();
 
-            string query = @"
-            INSERT INTO Internacao 
-            (DataInicio, DataFim, PacienteId, AcomodacaoId, StatusInternacaoId) 
-            VALUES 
-            (@DataInicio, @DataFim, @PacienteId, @AcomodacaoId, @StatusInternacaoId)";
+            // Gera o próximo número de atendimento automaticamente
+            string queryUltimoAtendimento = "SELECT MAX(atendimento) FROM Internacao";
+            int novoAtendimento = 1;
 
-            using (var command = new SqliteCommand(query, connection))
+            using (var commandUltimo = new SqliteCommand(queryUltimoAtendimento, connection))
             {
-                command.Parameters.AddWithValue("@DataInicio", internacao.DataInicio);
-                command.Parameters.AddWithValue("@DataFim", (object?)internacao.DataFim ?? DBNull.Value);
-                command.Parameters.AddWithValue("@PacienteId", internacao.PacienteId);
-                command.Parameters.AddWithValue("@AcomodacaoId", internacao.AcomodacaoId);
-                command.Parameters.AddWithValue("@StatusInternacaoId", internacao.StatusInternacaoId);
+                var resultado = commandUltimo.ExecuteScalar();
+                if (resultado != DBNull.Value && resultado != null)
+                {
+                    novoAtendimento = Convert.ToInt32(resultado) + 1;
+                }
+            }
 
-                command.ExecuteNonQuery();
+            // Insere uma nova internação com o novo número de atendimento
+            string queryInserir = @"
+            INSERT INTO Internacao 
+            (DataInicio, DataFim, Atendimento, PacienteId, AcomodacaoId, StatusInternacaoId) 
+            VALUES 
+            (@DataInicio, @DataFim, @Atendimento, @PacienteId, @AcomodacaoId, @StatusInternacaoId)";
+
+            using (var commandInserir = new SqliteCommand(queryInserir, connection))
+            {
+                commandInserir.Parameters.AddWithValue("@DataInicio", internacao.DataInicio);
+                commandInserir.Parameters.AddWithValue("@DataFim", (object?)internacao.DataFim ?? DBNull.Value);
+                commandInserir.Parameters.AddWithValue("@Atendimento", novoAtendimento);
+                commandInserir.Parameters.AddWithValue("@PacienteId", internacao.PacienteId);
+                commandInserir.Parameters.AddWithValue("@AcomodacaoId", internacao.AcomodacaoId);
+                commandInserir.Parameters.AddWithValue("@StatusInternacaoId", internacao.StatusInternacaoId);
+
+                commandInserir.ExecuteNonQuery();
             }
         }
     }
+
 
 }
