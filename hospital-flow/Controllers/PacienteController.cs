@@ -1,11 +1,13 @@
 ﻿using hospital_flow.Models;
 using hospital_flow.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_flow.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PacienteController : ControllerBase
     {
         private readonly PacienteService _pacienteService;

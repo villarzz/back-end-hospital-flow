@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using hospital_flow.Services;
 
@@ -11,26 +12,60 @@ namespace hospital_flow
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Chave secreta para JWT (use uma chave mais segura em produção)
-            var key = Encoding.ASCII.GetBytes("sua-chave-secreta-super-segura");
+            // Chave secreta para JWT
+            var key = Encoding.ASCII.GetBytes("zQ9sk+3xyvKZsY+U8ZVgA5NlW7Zx9XkrsT9z0yhcBkQ=");
 
             // Adicionando serviços ao contêiner
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
-            // 🟡 Configuração do CORS para produção (permitir apenas uma origem específica)
+            // 🔐 Configuração do Swagger com suporte a JWT Bearer
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hospital Flow API", Version = "v1" });
+
+                // Definição de segurança Bearer
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Insira o token JWT assim: Bearer {seu_token}",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                // Aplicação global da definição
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
+            });
+
+            // 🟡 Configuração do CORS para produção
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin", policy =>
                 {
-                    policy.WithOrigins("https://seu-dominio.com") // Substitua pelo domínio do seu front-end
+                    policy.WithOrigins("https://seu-dominio.com")
                           .AllowAnyMethod()
                           .AllowAnyHeader();
                 });
             });
 
-            // Configuração da autenticação JWT
+            // 🔐 Configuração da autenticação JWT
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -38,7 +73,7 @@ namespace hospital_flow
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = true;  // Impede uso de HTTP (só HTTPS)
+                options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -49,18 +84,18 @@ namespace hospital_flow
                 };
             });
 
-            // Adicionando autorização
             builder.Services.AddAuthorization();
 
-            // Serviços do banco de dados e lógica da aplicação
-            builder.Services.AddSingleton<DatabaseService>();
-            builder.Services.AddSingleton<PacienteService>();
-            builder.Services.AddSingleton<UsuarioService>();
-            builder.Services.AddSingleton<AuthService>();
+            // Serviços da aplicação
+            builder.Services.AddScoped<InternacaoService>();
+            builder.Services.AddScoped<DatabaseService>();
+            builder.Services.AddScoped<PacienteService>();
+            builder.Services.AddScoped<UsuarioService>();
+            builder.Services.AddScoped<AuthService>();
 
             var app = builder.Build();
 
-            // Configuração do pipeline HTTP
+            // Middleware
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -69,7 +104,6 @@ namespace hospital_flow
 
             app.UseHttpsRedirection();
 
-            // 🟡 Ativando o CORS restrito no pipeline para produção
             app.UseCors("AllowSpecificOrigin");
 
             app.UseAuthentication();
