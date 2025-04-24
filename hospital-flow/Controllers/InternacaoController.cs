@@ -44,5 +44,15 @@ namespace hospital_flow.Controllers
             return Ok("Internação criada com sucesso.");
         }
 
+        [HttpGet("obter-internacoes")]
+        public IActionResult ObterInternacoes(
+            [FromQuery] string? atendimento,
+            [FromQuery] string? nomePaciente,
+            [FromQuery] string? convenio,
+            [FromQuery] string? statusInternacao)
+        {
+            var internacoes = _internacaoService.ObterInternacoes(atendimento, nomePaciente, convenio, statusInternacao);
+            return Ok(internacoes);
+        }
     }
 }

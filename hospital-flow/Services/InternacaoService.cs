@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using hospital_flow.Models;
+using System.Data.SqlClient;
 
 public class InternacaoService
 {
@@ -50,5 +51,72 @@ public class InternacaoService
         }
     }
 
+    public List<InternacaoFiltro> ObterInternacoes(string? atendimento, string? nomePaciente, string? convenio, string? statusInternacao)
+    {
+        var internacoes = new List<InternacaoFiltro>();
+
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+
+            var sql = @"
+            SELECT i.*, p.NOME AS NomePaciente, p.Convenio
+            FROM INTERNACAO i
+            LEFT JOIN Paciente p ON i.PACIENTEID = p.id
+            WHERE 1 = 1";
+
+            var parameters = new List<SqliteParameter>();
+
+            if (!string.IsNullOrEmpty(atendimento))
+            {
+                sql += " AND i.Atendimento = @Atendimento";
+                parameters.Add(new SqliteParameter("@Atendimento", atendimento));
+            }
+
+            if (!string.IsNullOrEmpty(nomePaciente))
+            {
+                sql += " AND p.NOME LIKE @NomePaciente";
+                parameters.Add(new SqliteParameter("@NomePaciente", $"%{nomePaciente}%"));
+            }
+
+            if (!string.IsNullOrEmpty(convenio))
+            {
+                sql += " AND p.Convenio LIKE @Convenio";
+                parameters.Add(new SqliteParameter("@Convenio", $"%{convenio}%"));
+            }
+
+            if (!string.IsNullOrEmpty(statusInternacao))
+            {
+                sql += " AND i.STATUSINTERNACAOID = @Status";
+                parameters.Add(new SqliteParameter("@Status", statusInternacao));
+            }
+
+            using (var command = new SqliteCommand(sql, connection))
+            {
+                command.Parameters.AddRange(parameters.ToArray());
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        internacoes.Add(new InternacaoFiltro
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            Atendimento = Convert.ToInt32(reader["Atendimento"]),
+                            DataInicio = reader["DataInicio"].ToString(),
+                            DataFim = reader["DataFim"].ToString(),
+                            StatusInternacaoId = Convert.ToInt32(reader["STATUSINTERNACAOID"]),
+                            PacienteId = Convert.ToInt32(reader["PACIENTEID"]),
+                            NomePaciente = reader["NomePaciente"].ToString(),
+                            Convenio = reader["Convenio"].ToString(),
+                            AcomodacaoId = Convert.ToInt32(reader["ACOMODACAOID"]),
+                        });
+                    }
+                }
+            }
+        }
+
+        return internacoes;
+    }
 
 }
