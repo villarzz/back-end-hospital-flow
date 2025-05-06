@@ -88,18 +88,17 @@ public class InternacaoService
         {
             connection.Open();
 
-            var sql = @"
-        SELECT 
-            i.*, 
-            p.Nome AS NomePaciente, 
-            p.Convenio, 
-            a.DESCRICAO as DescricaoAcomodacao, 
-            s.DESCRICAO as StatusInternacaoDescricao
-        FROM INTERNACAO i
-        LEFT JOIN ACOMODACAO a ON i.ACOMODACAOID = a.id
-        LEFT JOIN STATUSINTERNACAO s ON i.STATUSINTERNACAOID = s.id
-        LEFT JOIN Paciente p ON i.PACIENTEID = p.id
-        WHERE 1 = 1";
+            var sql = @"SELECT 
+                            i.*, 
+                            p.Nome AS NomePaciente, 
+                        p.Convenio, 
+                        a.DESCRICAO as DescricaoAcomodacao, 
+                        s.DESCRICAO as StatusInternacaoDescricao
+                    FROM INTERNACAO i
+                    LEFT JOIN ACOMODACAO a ON i.ACOMODACAOID = a.id
+                    LEFT JOIN STATUSINTERNACAO s ON i.STATUSINTERNACAOID = s.id
+                    LEFT JOIN Paciente p ON i.PACIENTEID = p.id
+                    WHERE 1 = 1";
 
             var parameters = new List<SqliteParameter>();
 

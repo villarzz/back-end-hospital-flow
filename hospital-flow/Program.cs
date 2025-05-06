@@ -87,6 +87,7 @@ namespace hospital_flow
             builder.Services.AddAuthorization();
 
             // Serviços da aplicação
+            builder.Services.AddScoped<RelatoriosService>();
             builder.Services.AddScoped<InternacaoService>();
             builder.Services.AddScoped<DatabaseService>();
             builder.Services.AddScoped<PacienteService>();
