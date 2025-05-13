@@ -59,7 +59,7 @@ namespace hospital_flow
             {
                 options.AddPolicy("AllowSpecificOrigin", policy =>
                 {
-                    policy.WithOrigins("https://seu-dominio.com")
+                    policy.WithOrigins("http://localhost:4200", "https://seu-dominio.com")
                           .AllowAnyMethod()
                           .AllowAnyHeader();
                 });

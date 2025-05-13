@@ -22,7 +22,6 @@ namespace hospital_flow.Models
         public string? DataFim { get; set; }
         public string? NomePaciente { get; set; }
         public string? Convenio { get; set; }
-        [JsonIgnore]
         public int Atendimento { get; set; }
         public int PacienteId { get; set; }
         public int AcomodacaoId { get; set; }
