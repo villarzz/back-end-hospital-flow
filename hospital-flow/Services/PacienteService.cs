@@ -73,29 +73,58 @@ namespace hospital_flow.Services
             }
         }
 
-        public List<Paciente> GetPacientes()
+        public List<PacienteFiltro> GetPacientes(string? nomePaciente, string? cpf, string? dataNascimento)
         {
-            var pacientes = new List<Paciente>();
+            var pacientes = new List<PacienteFiltro>();
 
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
 
-                string query = "SELECT * FROM Paciente";
+                var sql = @"SELECT DISTINCT p.*
+                    FROM Paciente p
+                    LEFT JOIN INTERNACAO i ON i.PACIENTEID = p.Id
+                    WHERE 1 = 1";
 
-                using (var command = new SqliteCommand(query, connection))
-                using (var reader = command.ExecuteReader())
+                var parameters = new List<SqliteParameter>();
+
+                if (!string.IsNullOrEmpty(nomePaciente))
                 {
-                    while (reader.Read())
+                    sql += " AND p.NOME LIKE @NomePaciente";
+                    parameters.Add(new SqliteParameter("@NomePaciente", $"%{nomePaciente}%"));
+                }
+
+                if (!string.IsNullOrEmpty(cpf))
+                {
+                    sql += " AND p.Cpf LIKE @Cpf";
+                    parameters.Add(new SqliteParameter("@Cpf", $"%{cpf}%"));
+                }
+
+                if (!string.IsNullOrEmpty(dataNascimento))
+                {
+                    sql += " AND p.DataNascimento = @DataNascimento";
+                    parameters.Add(new SqliteParameter("@DataNascimento", dataNascimento));
+                }
+
+                using (var command = new SqliteCommand(sql, connection))
+                {
+                    command.Parameters.AddRange(parameters.ToArray());
+
+                    using (var reader = command.ExecuteReader())
                     {
-                        pacientes.Add(new Paciente
+                        while (reader.Read())
                         {
-                            Id = reader.GetInt32(0),
-                            Nome = reader.GetString(1),
-                            DataNascimento = reader.GetString(2),
-                            Cpf = reader.GetString(3),
-                            Convenio = reader.IsDBNull(4) ? null : reader.GetString(4) // Se for NULL, define como null na aplicação
-                        });
+                            pacientes.Add(new PacienteFiltro
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Nome = reader.GetString(reader.GetOrdinal("Nome")),
+                                DataNascimento = reader.GetString(reader.GetOrdinal("DataNascimento")),
+                                Cpf = reader.GetString(reader.GetOrdinal("Cpf")),
+                                Convenio = reader.IsDBNull(reader.GetOrdinal("Convenio"))
+                                    ? null
+                                    : reader.GetString(reader.GetOrdinal("Convenio"))
+                            });
+                        }
                     }
                 }
             }

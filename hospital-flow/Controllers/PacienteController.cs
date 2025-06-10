@@ -31,11 +31,13 @@ namespace hospital_flow.Controllers
 
 
         [HttpGet("obter-pacientes")]
-        public ActionResult<List<Paciente>> GetPacientes()
+        public ActionResult<List<PacienteFiltro>> GetPacientes([FromQuery] string? nomePaciente,
+            [FromQuery] string? cpf,
+            [FromQuery] string? dataNascimento)
         {
             try
             {
-                var pacientes = _pacienteService.GetPacientes();
+                var pacientes = _pacienteService.GetPacientes(nomePaciente,cpf,dataNascimento);
 
                 if (pacientes == null || pacientes.Count == 0)
                 {
