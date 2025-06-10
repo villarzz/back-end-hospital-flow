@@ -1,8 +1,10 @@
 ﻿using hospital_flow.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_flow.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class RelatoriosController : ControllerBase

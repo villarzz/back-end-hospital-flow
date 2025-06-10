@@ -42,7 +42,7 @@ namespace hospital_flow.Controllers
             try
             {
                 _usuarioService.ExcluirUsuario(id);
-                return NoContent(); // 204 No Content
+                return NoContent();
             }
             catch (KeyNotFoundException)
             {

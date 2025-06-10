@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace hospital_flow.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class PacienteController : ControllerBase
     {
         private readonly PacienteService _pacienteService;
