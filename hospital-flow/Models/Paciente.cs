@@ -13,7 +13,6 @@ namespace hospital_flow.Models
 
     public class PacienteFiltro
     {
-        [JsonIgnore]
         public int Id { get; set; }
         public string? Nome { get; set; }
         public string DataNascimento { get; set; }
