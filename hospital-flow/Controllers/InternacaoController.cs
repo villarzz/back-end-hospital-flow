@@ -69,7 +69,7 @@ namespace hospital_flow.Controllers
             return Ok(internacoes);
         }
 
-        [HttpDelete("deletar-interncao/{id}")]
+        [HttpDelete("deletar-internacao/{id}")]
         public IActionResult Delete(int id)
         {
             _internacaoService.DeletarInternacao(id);
