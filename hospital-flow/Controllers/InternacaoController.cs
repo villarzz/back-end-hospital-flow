@@ -47,7 +47,7 @@ namespace hospital_flow.Controllers
         }
 
         [HttpPut("atualizar-internacao")]
-        public IActionResult PutInternacao([FromBody] Internacao internacao)
+        public IActionResult PutInternacao([FromBody] InternacaoVielModel internacao)
         {
             if (internacao == null || internacao.Id == 0)
             {
@@ -67,6 +67,13 @@ namespace hospital_flow.Controllers
         {
             var internacoes = _internacaoService.ObterInternacoes(atendimento, nomePaciente, convenio, statusInternacao);
             return Ok(internacoes);
+        }
+
+        [HttpDelete("deletar-internacao/{id}")]
+        public IActionResult Delete(int id)
+        {
+            _internacaoService.DeletarInternacao(id);
+            return NoContent();
         }
     }
 }

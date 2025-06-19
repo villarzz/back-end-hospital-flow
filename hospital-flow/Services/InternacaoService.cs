@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using hospital_flow.Models;
 using System.Data.SqlClient;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 public class InternacaoService
 {
@@ -51,7 +52,7 @@ public class InternacaoService
         }
     }
 
-    public void PutInternacao(Internacao internacao)
+    public void PutInternacao(InternacaoVielModel internacao)
     {
         using (var connection = new SqliteConnection(_connectionString))
         {
@@ -153,5 +154,21 @@ public class InternacaoService
             }
         }
         return internacoes;
+    }
+
+    public void DeletarInternacao(int id)
+    {
+        using (var connection = new SqliteConnection(_connectionString))
+        {
+            connection.Open();
+
+            string query = "DELETE FROM Internacao WHERE Id = @Id";
+
+            using (var command = new SqliteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Id", id);
+                command.ExecuteNonQuery();
+            }
+        }
     }
 }

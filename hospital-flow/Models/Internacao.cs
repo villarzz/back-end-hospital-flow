@@ -14,9 +14,18 @@ namespace hospital_flow.Models
         public int StatusInternacaoId { get; set; }
     }
     
+    public class InternacaoVielModel
+    {
+        public int Id { get; set; }
+        public string DataInicio { get; set; } = default!;
+        public string? DataFim { get; set; }
+        public int PacienteId { get; set; }
+        public int AcomodacaoId { get; set; }
+        public int StatusInternacaoId { get; set; }
+    }
+    
     public class InternacaoFiltro
     {
-        [JsonIgnore]
         public int Id { get; set; }
         public string DataInicio { get; set; } = default!;
         public string? DataFim { get; set; }
