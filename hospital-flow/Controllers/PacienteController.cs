@@ -29,6 +29,18 @@ namespace hospital_flow.Controllers
             return Ok("Paciente criado ou atualizado com sucesso.");
         }
 
+        [HttpPut("editar-paciente")]
+        public IActionResult PutPaciente([FromBody] Paciente paciente)
+        {
+            if (paciente == null || paciente.Id == 0) // Supondo que o ID seja necessário para edição
+            {
+                return BadRequest("Dados inválidos para edição.");
+            }
+
+            _pacienteService.PutPaciente(paciente);
+            return Ok("Paciente editado com sucesso.");
+        }
+
 
         [HttpGet("obter-pacientes")]
         public ActionResult<List<PacienteFiltro>> GetPacientes([FromQuery] string? nomePaciente,

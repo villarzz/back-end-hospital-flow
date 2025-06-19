@@ -73,6 +73,49 @@ namespace hospital_flow.Services
             }
         }
 
+        public void PutPaciente(Paciente paciente)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                // Verifica se o paciente existe pelo ID
+                string queryVerifica = "SELECT COUNT(1) FROM Paciente WHERE Id = @Id";
+                int count = 0;
+
+                using (var commandVerifica = new SqliteCommand(queryVerifica, connection))
+                {
+                    commandVerifica.Parameters.AddWithValue("@Id", paciente.Id);
+                    count = Convert.ToInt32(commandVerifica.ExecuteScalar());
+                }
+
+                if (count == 0)
+                {
+                    throw new Exception("Paciente não encontrado para edição.");
+                }
+
+                // Atualiza o paciente
+                string queryAtualiza = @"UPDATE Paciente 
+                         SET Nome = @Nome, 
+                             DataNascimento = @DataNascimento, 
+                             Cpf = @Cpf,
+                             Convenio = @Convenio 
+                         WHERE Id = @Id";
+
+                using (var commandAtualiza = new SqliteCommand(queryAtualiza, connection))
+                {
+                    commandAtualiza.Parameters.AddWithValue("@Id", paciente.Id);
+                    commandAtualiza.Parameters.AddWithValue("@Nome", paciente.Nome);
+                    commandAtualiza.Parameters.AddWithValue("@DataNascimento", paciente.DataNascimento);
+                    commandAtualiza.Parameters.AddWithValue("@Cpf", paciente.Cpf);
+                    commandAtualiza.Parameters.AddWithValue("@Convenio", (object?)paciente.Convenio ?? DBNull.Value);
+
+                    commandAtualiza.ExecuteNonQuery();
+                }
+            }
+        }
+
+
         public List<PacienteFiltro> GetPacientes(string? nomePaciente, string? cpf, string? dataNascimento)
         {
             var pacientes = new List<PacienteFiltro>();
