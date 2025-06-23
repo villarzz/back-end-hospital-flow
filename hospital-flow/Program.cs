@@ -59,9 +59,9 @@ namespace hospital_flow
             {
                 options.AddPolicy("AllowSpecificOrigin", policy =>
                 {
-                    policy.WithOrigins("http://localhost:4200", "https://seu-dominio.com")
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
+                    policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
                 });
             });
 
@@ -73,7 +73,7 @@ namespace hospital_flow
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = true;
+                options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -103,7 +103,7 @@ namespace hospital_flow
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseCors("AllowSpecificOrigin");
 
