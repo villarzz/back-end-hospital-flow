@@ -13,7 +13,7 @@ Este é o back-end do sistema **Hospital Flow**, uma aplicação desenvolvida pa
 ## 🚀 Como executar o projeto
 
 1. Certifique-se de ter o [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) instalado.
-2. Abra o projeto na sua IDE (como Visual Studio ou VS Code).
+2. Abra o projeto na sua IDE (como Visual Studio).
 3. Execute o projeto com o seguinte comando no terminal ou através da própria IDE:
 4. A aplicação estará disponível em:
 - 🔗 HTTP: http://localhost:5240
